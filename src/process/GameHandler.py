@@ -130,7 +130,7 @@ class GameHandler:
             player_info['action'] = int(self.info[i]['action'])
             player_info['attack_level'] = int(self.info[i]['atk_lvl'])
             player_info['defense_level'] = int(self.info[i]['def_lvl'])
-            player_info['overheat'] = float(self.info[i]['attack efficiency'])
+            player_info['efficiency'] = float(self.info[i]['attack efficiency'])
             self.final_info['steps'][self.current_step -
                                      1]['players_data'].append(player_info)
         self.final_info['steps'][self.current_step -
