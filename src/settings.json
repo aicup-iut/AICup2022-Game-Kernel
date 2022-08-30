@@ -1,5 +1,5 @@
 {
-  "rounds": 5,
+  "rounds": 20,
   "def_upgrade_cost": 2,
   "atk_upgrade_cost": 2,
   "cool_down_rate": 0.5,
@@ -8,6 +8,7 @@
   "gold_count": 10,
   "agent_sight_range": 5,
 
+  // Cgroup variables
   "timeout": 2,
   "running_cpu_limit": 80,
   "sleeping_cpu_limit": 10,
