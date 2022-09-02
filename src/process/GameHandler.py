@@ -125,12 +125,23 @@ class GameHandler:
             player_info['id'] = i + 1
             player_info['x_position'] = int(self.info[i]['x'])
             player_info['y_position'] = int(self.info[i]['y'])
+            if self.info[i]['action'] == 1:  # move down
+                player_info['x_position'] -= 1
+            elif self.info[i]['action'] == 2:  # move up
+                player_info['x_position'] += 1
+            elif self.info[i]['action'] == 3:  # move right
+                player_info['y_position'] -= 1
+            elif self.info[i]['action'] == 4:  # move left
+                player_info['y_position'] += 1
+            player_info['x_position_after'] = int(self.info[i]['x'])
+            player_info['y_position_after'] = int(self.info[i]['y'])
             player_info['coins'] = int(self.info[i]['wallet'])
             player_info['vault'] = int(self.info[i]['safe wallet'])
             player_info['action'] = int(self.info[i]['action'])
             player_info['attack_level'] = int(self.info[i]['atk_lvl'])
             player_info['defense_level'] = int(self.info[i]['def_lvl'])
-            player_info['efficiency'] = float(self.info[i]['attack efficiency'])
+            player_info['efficiency'] = float(
+                self.info[i]['attack efficiency'])
             self.final_info['steps'][self.current_step -
                                      1]['players_data'].append(player_info)
         self.final_info['steps'][self.current_step -
