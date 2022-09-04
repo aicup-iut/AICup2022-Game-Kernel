@@ -1,5 +1,5 @@
 from os import getcwd, makedirs
-from json import load, dumps
+from json import load, dump
 from process.AgentHandler import AgentHandler
 from random import randrange
 from environment.env import AICUP2022ENV
@@ -169,6 +169,5 @@ class GameHandler:
             igd[f'player_{i+1}_init_y'] = self.map[f'player{i+1}_coordinate'][1]
 
     def log_jsonify(self):
-        json_object = dumps(self.final_info, indent='\t')
-        with open(f'{self.log_path}/game.json', 'w') as outFile:
-            outFile.write(json_object)
+        with open(f'{self.log_path}/game.json', 'w', encoding='utf8') as json_file:
+            dump(self.final_info, json_file, ensure_ascii=False, indent='\t')
