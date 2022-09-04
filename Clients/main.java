@@ -75,6 +75,7 @@ public class main {
         public int deflvl, atklvl;
         public int wallet, safeWallet;
         public Vector<Integer> wallets;
+        public int lastAction;
 
         public GameState() {
             map = new Map();
@@ -87,14 +88,14 @@ public class main {
             map.width = scanner.nextInt();
             map.height = scanner.nextInt();
             map.goldCount = scanner.nextInt();
-            map.sightRange = scanner.nextInt();
+            map.sightRange = scanner.nextInt(); // equivalent to (2r+1)
             map.grid = new Vector<>();
         }
 
         public void setInfo() {
             int x = scanner.nextInt();
             int y = scanner.nextInt();
-            location = new Point(x, y);
+            location = new Point(x, y); // (row, column)
             for (int i = 0; i < map.sightRange * map.sightRange; i++) {
                 MapTile tile = new MapTile();
                 tile.type = MapType.values()[scanner.nextInt()];
@@ -104,17 +105,18 @@ public class main {
                 tile.coordinates = new Point(x, y);
                 map.grid.add(tile);
             }
-            agentID = scanner.nextInt();
-            currentRound = scanner.nextInt();
+            agentID = scanner.nextInt(); // player1: 0,1 --- player2: 2,3
+            currentRound = scanner.nextInt(); // 1 indexed
             attackRatio = scanner.nextFloat();
             deflvl = scanner.nextInt();
             atklvl = scanner.nextInt();
             wallet = scanner.nextInt();
             safeWallet = scanner.nextInt();
-            wallets = new Vector<>();
-            for(int i = 0;i < 4; i++) {
+            wallets = new Vector<>(); // current wallet
+            for(int i = 0; i < 4; i++) {
                 wallets.add(scanner.nextInt());
             }
+            lastAction = scanner.nextInt(); // -1 if unsuccessful
             scanner.nextLine();
         }
 

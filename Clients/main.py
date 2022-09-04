@@ -66,7 +66,7 @@ class GameState:
         self.map = Map()
         self.map.width, self.map.height = map(int, input().split())
         self.map.gold_count = int(input())
-        self.map.sight_range = int(input())
+        self.map.sight_range = int(input())  # equivalent to (2r+1)
         self.map.set_grid_size()
         self.debug_log = ''
 
@@ -81,7 +81,8 @@ class GameState:
         self.atklvl = int(input())
         self.wallet = int(input())
         self.safe_wallet = int(input())
-        self.wallets = [*map(int, input().split())]
+        self.wallets = [*map(int, input().split())]  # current wallet
+        self.last_action = int(input())  # -1 if unsuccessful
 
     def debug(self) -> None:
         # Customize to your needs
@@ -93,6 +94,7 @@ class GameState:
         self.debug_log += f'wallet: {str(self.wallet)}\n'
         self.debug_log += f'safe wallet: {str(self.safe_wallet)}\n'
         self.debug_log += f'list of wallets: {str(self.wallets)}\n'
+        self.debug_log += f'last action: {str(self.last_action)}\n'
         self.debug_log += f'{60 * "-"}\n'
 
     def debug_file(self) -> None:

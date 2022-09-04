@@ -71,23 +71,27 @@ public:
             >> coolDownRate
             >> linearAttackRange >> rangedAttackRadius
             >> map.width >> map.height
-            >> map.goldCount >> map.sightRange;
+            >> map.goldCount
+            >> map.sightRange; // equivalent to (2r+1)
         map.setGridSize();
     }
     void setInfo() {
-        cin >> location.first >> location.second;
+        cin >> location.first >> location.second; // (row, column)
         for (auto& tile : map.grid) {
             cin >> tile.type >> tile.data
                 >> tile.coordinates.first
                 >> tile.coordinates.second;
         }
-        cin >> agentID >> currentRound >> attackRatio
+        cin >> agentID // player1: 0,1 --- player2: 2,3
+            >> currentRound // 1 indexed
+            >> attackRatio
             >> deflvl >> atklvl
             >> wallet >> safeWallet;
         wallets = vector<int>(4);
-        for (auto& w : wallets) {
+        for (auto& w : wallets) { // current wallet
             cin >> w;
         }
+        cin >> lastAction; // -1 if unsuccessful
     }
     Action getAction();
     int rounds;
@@ -102,6 +106,7 @@ public:
     int deflvl, atklvl;
     int wallet, safeWallet;
     vector<int> wallets;
+    int lastAction;
 };
 
 int main()

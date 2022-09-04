@@ -6,8 +6,8 @@ namespace AICUP
     public class Point
     {
         public Point() { }
-        public int first { get; set; }
-        public int second { get; set; }
+        public int x { get; set; }
+        public int y { get; set; }
     };
 
     enum Action
@@ -76,37 +76,37 @@ namespace AICUP
             map.width = int.Parse(maptok[0]);
             map.height = int.Parse(maptok[1]);
             map.goldCount = Convert.ToInt32(Console.ReadLine());
-            map.sightRange = Convert.ToInt32(Console.ReadLine());
+            map.sightRange = Convert.ToInt32(Console.ReadLine()); // equivalent to (2r+1)
             map.setGridSize();
         }
 
         public void setInfo()
         {
-            var loctok = Console.ReadLine().Split();
-            location.first = int.Parse(loctok[0]);
-            location.second = int.Parse(loctok[1]);
+            var loctok = Console.ReadLine().Split(); // (row, column)
+            location.x = int.Parse(loctok[0]);
+            location.y = int.Parse(loctok[1]);
             foreach (var item in map.grid)
             {
                 var token = Console.ReadLine().Split();
                 item.type = (MapType)int.Parse(token[0]);
                 item.data = int.Parse(token[1]);
-                item.coordinates.first = int.Parse(token[2]);
-                item.coordinates.second = int.Parse(token[3]);
+                item.coordinates.x = int.Parse(token[2]);
+                item.coordinates.y = int.Parse(token[3]);
             }
-            var inp= Console.ReadLine();
-            agentID = Convert.ToInt32(inp);
-            currentRound = Convert.ToInt32(Console.ReadLine());
+            agentID = Convert.ToInt32(Console.ReadLine()); // player1: 0,1 --- player2: 2,3
+            currentRound = Convert.ToInt32(Console.ReadLine()); // 1 indexed
             attackRatio = float.Parse(Console.ReadLine());
             deflvl = Convert.ToInt32(Console.ReadLine());
             atklvl = Convert.ToInt32(Console.ReadLine());
             wallet = Convert.ToInt32(Console.ReadLine());
             safeWallet = Convert.ToInt32(Console.ReadLine());
-            wallets = new List<int>();
+            wallets = new List<int>(); // current wallet
             var walletstok = Console.ReadLine().Split();
             for (int i = 0; i < 4; i++)
             {
                 wallets.Add(int.Parse(walletstok[i]));
             }
+            lastAction = Convert.ToInt32(Console.ReadLine()); // -1 if unsuccessful
         }
 
         public Action getAction()
@@ -128,6 +128,7 @@ namespace AICUP
         public int deflvl, atklvl;
         public int wallet, safeWallet;
         List<int> wallets;
+        public int lastAction;
     };
 
     class Program
