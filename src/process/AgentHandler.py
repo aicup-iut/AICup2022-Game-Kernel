@@ -53,7 +53,8 @@ class AgentHandler:
         self.writer(obs[11])  # attack level
         self.writer(obs[12])  # wallet
         self.writer(obs[13])  # safe wallet
-        self.writer(*obs[15])  # safe wallets
+        self.writer(*obs[15])  # agents' wallet
+        self.writer(obs[14])  # last action
 
     def action(self, obs):
         if self.isFinished:
