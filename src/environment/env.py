@@ -308,19 +308,24 @@ class AICUP2022ENV(gym.Env):
         # self.main_board[np.where(wall_list==True)]=WALL
 
     def add_gold(self):
-        current_gold = 0
-        for i in self.main_board:
-            for j in i:
-                if j == GOLD:
-                    current_gold += 1
-        count = self.gold_count-current_gold
+        # current_gold = 0
+        # for i in self.main_board:
+        #     for j in i:
+        #         if j == GOLD:
+        #             current_gold += 1
+        current_gold = np.count_nonzero(self.main_board == GOLD)
+
+        count = self.gold_count - current_gold
         empty_coords = self.empty_coords_list(count)
-        count -= 1
-        while count >= 0:
-            X, Y = empty_coords[count]
-            self.main_board[X][Y] = 2
-            self.data_board[X][Y] = 1
-            count -= 1
+        # count -= 1
+        # while count:
+        #     X, Y = empty_coords[count]
+        #     self.main_board[X, Y] = 2
+        #     self.data_board[X, Y] = 1
+        #     count -= 1
+
+        self.main_board[empty_coords] = 2
+        self.data_board[empty_coords] = 1
         return self
 
     def empty_coords_list(self, count):
