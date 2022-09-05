@@ -208,16 +208,17 @@ class AICUP2022ENV(gym.Env):
         return True
 
     def check_coord_valid(self, x, y):
-        # TODO
-        # check walls
-        # valid_obstacle=[EMPTY,GOLD, TREASURY]
-        if x < 0 or x >= self.x_size:
-            return False
-        if y < 0 or y >= self.y_size:
-            return False
-        # if self.main_board[x][y] not in valid_obstacle:
+        # # TODO
+        # # check walls
+        # # valid_obstacle=[EMPTY,GOLD, TREASURY]
+        # if x < 0 or x >= self.x_size:
         #     return False
-        return True
+        # if y < 0 or y >= self.y_size:
+        #     return False
+        # # if self.main_board[x][y] not in valid_obstacle:
+        # #     return False
+        # return True
+        return 0 <= x < self.x_size and 0 <= y < self.y_size
 
     def update_board(self):
         # update the board with agents' coordinations
