@@ -201,11 +201,13 @@ class AICUP2022ENV(gym.Env):
         valid_obstacle = [EMPTY, GOLD, TREASURY]
         agents = [(i.x, i.y) for i in self.agents_list]
 
-        if self.main_board[x][y] not in valid_obstacle:
-            return False
-        if (x, y) in agents:
-            return False
-        return True
+        # if self.main_board[x][y] not in valid_obstacle:
+        #     return False
+        # if (x, y) in agents:
+        #     return False
+        # return True
+        
+        return self.main_board[x][y] in valid_obstacle and (x, y) in agents
 
     def check_coord_valid(self, x, y):
         # # TODO
