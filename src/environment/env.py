@@ -206,8 +206,8 @@ class AICUP2022ENV(gym.Env):
         # if (x, y) in agents:
         #     return False
         # return True
-        
-        return self.main_board[x][y] in valid_obstacle and (x, y) in agents
+
+        return self.main_board[x][y] in valid_obstacle and (x, y) not in agents
 
     def check_coord_valid(self, x, y):
         # # TODO
@@ -249,16 +249,16 @@ class AICUP2022ENV(gym.Env):
 
         for i in range(self.x_size):
             for j in range(self.y_size):
-                if gold_map[i][j] == GOLD:
-                    self.main_board[i][j] = GOLD
-                if gold_map[i][j] == WALL:
-                    self.main_board[i][j] = WALL
-        for coord in self.treasury_coord:
-            self.main_board[coord[0]][coord[1]] = TREASURY
+                if gold_map[i, j] == GOLD:
+                    self.main_board[i, j] = GOLD
+                if gold_map[i, j] == WALL:
+                    self.main_board[i, j] = WALL
+        for x, y in self.treasury_coord:
+            self.main_board[x, y] = TREASURY
         for i in range(self.x_size):
             for j in range(self.y_size):
-                if self.main_board[i][j] == 0:
-                    self.data_board[i][j] = 0
+                if self.main_board[i, j] == 0:
+                    self.data_board[i, j] = 0
 
         return self
 
