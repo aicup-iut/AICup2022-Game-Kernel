@@ -288,15 +288,15 @@ class AICUP2022ENV(gym.Env):
     def coord_transform(self, x, y, dx, dy):
         # return new coordination after moving in the board by from
         # (x,y) to (x+dx,y+dy)
-        new_x = x + dx
-        new_y = y + dy
+        # new_x = x + dx
+        # new_y = y + dy
         # top and bottom edges are connected
         # if new_y >=self.y_size or new_y<0:
         #     new_y = (new_y % self.y_size)
         # # left and right edges likewise
         # if new_x >= self.x_size or new_x < 0:
         #     new_x =  (new_x %self.x_size)
-        return (new_x, new_y)
+        return x + dx, y + dy
 
     def add_wall(self, wall_list):
         for i in range(self.x_size):
