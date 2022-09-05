@@ -42,6 +42,15 @@ class MapTile:
         self.data: int
         self.coordinates: tuple(int, int)
 
+    def __str__(self) -> str:
+        res = self.type.name
+        if self.type in [MapType.OUT_OF_SIGHT, MapType.OUT_OF_MAP]:
+            return res.center(16)
+        elif self.type in [MapType.AGENT, MapType.GOLD]:
+            res += f':{self.data}'
+        res += f' ({self.coordinates[0]},{self.coordinates[1]})'
+        return res.center(16)
+
 
 class Map:
     def __init__(self) -> None:
@@ -50,6 +59,15 @@ class Map:
         self.gold_count: int
         self.sight_range: int
         self.grid: list
+
+    def __str__(self) -> str:
+        res = f'sight range -> {self.sight_range}\n'
+        for i in range(self.sight_range):
+            res += '\t'
+            for j in range(self.sight_range):
+                res += str(self.grid[i * self.sight_range + j])
+                res += '*' if j < 4 else '\n'
+        return res[:-1]
 
     def set_grid_size(self) -> None:
         self.grid = [MapTile() for _ in range(self.sight_range ** 2)]
@@ -74,6 +92,7 @@ class GameState:
         self.location = tuple(map(int, input().split()))  # (row, column)
         for tile in self.map.grid:
             tile.type, tile.data, *tile.coordinates = map(int, input().split())
+            tile.type = MapType(tile.type)
         self.agent_id = int(input())  # player1: 0,1 --- player2: 2,3
         self.current_round = int(input())  # 1 indexed
         self.attack_ratio = float(input())
@@ -88,6 +107,7 @@ class GameState:
         # Customize to your needs
         self.debug_log += f'round: {str(self.current_round)}\n'
         self.debug_log += f'location: {str(self.location)}\n'
+        self.debug_log += f'Map: {str(self.map)}\n'
         self.debug_log += f'attack ratio: {str(self.attack_ratio)}\n'
         self.debug_log += f'defence level: {str(self.deflvl)}\n'
         self.debug_log += f'attack level: {str(self.atklvl)}\n'
