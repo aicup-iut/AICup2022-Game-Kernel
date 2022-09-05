@@ -155,8 +155,8 @@ class GameHandler:
         igd['winner'] = self.players[self.winner[0] - 1]['name']
         igd['winnerId'] = self.winner[0]
         igd['win_reason'] = self.winner[1]
-        igd['map_width'] = int(self.info[0]['board'].shape[0])
-        igd['map_height'] = int(self.info[0]['board'].shape[1])
+        igd['map_width'] = self.map['width']
+        igd['map_height'] = self.map['height']
         igd['map_data'] = {}
         igd['map_data']['obstacle'] = self.map['walls']
         igd['map_data']['fog'] = self.map['fog_map']

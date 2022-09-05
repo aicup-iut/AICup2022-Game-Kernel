@@ -84,8 +84,8 @@ class AICUP2022ENV(gym.Env):
             'wallet': 0
         }]
         self.input_map = input_map
-        self.x_size = input_map['width']
-        self.y_size = input_map['height']
+        self.x_size = input_map['height']
+        self.y_size = input_map['width']
         self.agents_cnt = agents_cnt
         self.rounds = rounds
         self.max_rounds = rounds
@@ -369,8 +369,8 @@ class AICUP2022ENV(gym.Env):
 
     def load_map(self):
         conf_dic = self.input_map
-        self.x_size = conf_dic["width"]
-        self.y_size = conf_dic["height"]
+        self.x_size = conf_dic["height"]
+        self.y_size = conf_dic["width"]
         self.fog_map = conf_dic["fog_map"]
         for i in range(self.agents_cnt):
             self.agents_list[i].x = conf_dic[f"player{i+1}_coordinate"][0]
