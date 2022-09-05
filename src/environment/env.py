@@ -224,9 +224,10 @@ class AICUP2022ENV(gym.Env):
         # update the board with agents' coordinations
         # TODO
         gold_map = np.copy(self.main_board)
-        for i in range(self.x_size):
-            for j in range(self.y_size):
-                self.main_board[i][j] = 0
+        # for i in range(self.x_size):
+        #     for j in range(self.y_size):
+        #         self.main_board[i][j] = 0
+        self.main_board = np.zeros((self.x_size, self.y_size), dtype=int)
 
         for index, agent in enumerate(self.agents_list):
             x, y = agent.x, agent.y
