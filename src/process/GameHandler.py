@@ -13,7 +13,7 @@ class GameHandler:
         self.final_info = {'initial_game_data': {}, 'steps': []}
         with open(args.setting) as json_settings:
             self.settings = load(json_settings)
-        self.log_path = f'{getcwd()}/{args.log}'
+        self.log_path = args.log
         makedirs(self.log_path, exist_ok=True)
         with open(args.map) as input_map:
             self.map = load(input_map)

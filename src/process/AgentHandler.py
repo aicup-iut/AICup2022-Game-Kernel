@@ -2,14 +2,14 @@ from sys import executable as pyExe
 from subprocess import Popen, PIPE, STDOUT
 from threading import Timer
 from sys import platform
-
+from pathlib import Path
 
 class AgentHandler:
-    def __init__(self, executable_path, settings, map_size):
+    def __init__(self, executable_path: Path, settings, map_size):
         try:
             self.process = Popen(self.exec_command(executable_path),
                                  stdin=PIPE, stdout=PIPE, stderr=STDOUT,
-                                 text=True, shell=True, bufsize=1)
+                                 text=True, shell=False, bufsize=1)
             self.settings = settings
             self.isFinished = False
             self.writer(self.settings['rounds'])
@@ -24,13 +24,13 @@ class AgentHandler:
         except Exception as e:
             raise e
 
-    def exec_command(self, executable_path):
-        if executable_path[-2:] == 'py':
-            return f'{pyExe} {executable_path}'
-        elif executable_path[-3:] == 'jar':
-            return f'java -jar {executable_path}'
-        elif executable_path[-3:] == 'exe' and 'linux' in platform:
-            return f'mono {executable_path}'
+    def exec_command(self, executable_path: Path):
+        if executable_path.suffix == '.py':
+            return (Path(pyExe), executable_path)
+        elif executable_path.suffix == '.jar':
+            return ('java', '-jar', executable_path)
+        elif executable_path.suffix == '.exe' and 'linux' in platform:
+            return ('mono', executable_path)
         return executable_path
 
     def timeout_function(self):
