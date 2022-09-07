@@ -1,3 +1,4 @@
+from tkinter import W
 import gym
 from gym import error, spaces, utils, logger
 from gym.utils import seeding
@@ -247,18 +248,25 @@ class AICUP2022ENV(gym.Env):
         for index, agent in enumerate(self.agents_list):
             agent.safe_wallet = self.teams[index//2]['wallet']
 
-        for i in range(self.x_size):
-            for j in range(self.y_size):
-                if gold_map[i, j] == GOLD:
-                    self.main_board[i, j] = GOLD
-                if gold_map[i, j] == WALL:
-                    self.main_board[i, j] = WALL
-        for x, y in self.treasury_coord:
-            self.main_board[x, y] = TREASURY
-        for i in range(self.x_size):
-            for j in range(self.y_size):
-                if self.main_board[i, j] == 0:
-                    self.data_board[i, j] = 0
+        # for i in range(self.x_size):
+        #     for j in range(self.y_size):
+        #         if gold_map[i, j] == GOLD:
+        #             self.main_board[i, j] = GOLD
+        #         if gold_map[i, j] == WALL:
+        #             self.main_board[i, j] = WALL
+
+        self.main_board[np.where(gold_map == GOLD)] = GOLD
+        self.main_board[np.where(gold_map == WALL)] = WALL
+        
+        # for x, y in self.treasury_coord:
+        #     self.main_board[x, y] = TREASURY
+        self.main_board[np.array(self.treasury_coord)] = TREASURY
+
+        # for i in range(self.x_size):
+        #     for j in range(self.y_size):
+        #         if self.main_board[i, j] == 0:
+        #             self.data_board[i, j] = 0
+        self.data_board[np.where(self.main_board == 0)] = 0
 
         return self
 
