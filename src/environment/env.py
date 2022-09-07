@@ -317,12 +317,17 @@ class AICUP2022ENV(gym.Env):
 
         count = self.gold_count - current_gold
         empty_coords = self.empty_coords_list(count)
-        count -= 1
-        while count >= 0:
-            X, Y = empty_coords[count]
-            self.main_board[X, Y] = 2
-            self.data_board[X, Y] = 1
-            count -= 1
+        
+        # count -= 1
+        # while count >= 0:
+        #     X, Y = empty_coords[count]
+        #     self.main_board[X, Y] = 2
+        #     self.data_board[X, Y] = 1
+        #     count -= 1
+
+        for x, y in empty_coords:
+            self.main_board[x, y] = 2
+            self.data_board[x, y] = 1
 
         # self.main_board[empty_coords] = 2
         # self.data_board[empty_coords] = 1
