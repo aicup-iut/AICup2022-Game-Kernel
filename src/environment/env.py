@@ -1,4 +1,3 @@
-from tkinter import W
 import gym
 from gym import error, spaces, utils, logger
 from gym.utils import seeding
@@ -337,8 +336,6 @@ class AICUP2022ENV(gym.Env):
             self.main_board[x, y] = 2
             self.data_board[x, y] = 1
 
-        # self.main_board[empty_coords] = 2
-        # self.data_board[empty_coords] = 1
         return self
 
     def empty_coords_list(self, count):
