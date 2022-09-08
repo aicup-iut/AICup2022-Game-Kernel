@@ -307,12 +307,14 @@ class AICUP2022ENV(gym.Env):
         #     new_x =  (new_x %self.x_size)
         return x + dx, y + dy
 
-    def add_wall(self, wall_list):
-        for i in range(self.x_size):
-            for j in range(self.y_size):
-                if wall_list[i][j]:
-                    self.main_board[i][j] = WALL
-        # self.main_board[np.where(wall_list==True)]=WALL
+    def add_wall(self, wall_list: np.ndarray):
+        # print(wall_list)
+        # for i in range(self.x_size):
+        #     for j in range(self.y_size):
+        #         if wall_list[i][j]:
+        #             self.main_board[i][j] = WALL
+        #print(np.array(wall_list))
+        self.main_board[np.where(wall_list == 1)]=WALL
 
     def add_gold(self):
         # current_gold = 0
@@ -397,7 +399,7 @@ class AICUP2022ENV(gym.Env):
         self.treasury_coord = self.initialize_treasury(
             conf_dic["treasury_coordinate"][0], conf_dic["treasury_coordinate"][1])
         walls = conf_dic["walls"]
-        self.add_wall(walls)
+        self.add_wall(np.array(walls))
 
     def run_action(self, action, agent):
 
