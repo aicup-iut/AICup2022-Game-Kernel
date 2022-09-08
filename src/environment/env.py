@@ -364,6 +364,17 @@ class AICUP2022ENV(gym.Env):
             x, y = agent.x, agent.y
             manhattan = self.manhattan_sight(
                 x, y, self.agent_sight_range, fog=True)
+
+            not_gold_x = np.where(manhattan[:,:,0] != GOLD)[0]
+            not_gold_y = np.where(manhattan[:,:,0] != GOLD)[1]
+            manhattan[not_gold_x, not_gold_y, 1] = -1
+            r = (self.agent_sight_range - 1) / 2   
+            for agent_temp in self.agents_list:
+                if  abs(agent_temp.x - x) + abs(agent_temp.y - y) <= r:
+                    manhattan[
+                        int(agent_temp.x - x + r), int(agent_temp.y - y + r), 1
+                        ] = agent_temp.id
+
             manhattan = manhattan.reshape(
                 np.shape(manhattan)[0]*np.shape(manhattan)[1], np.shape(manhattan)[2])
             # manhattan=manhattan[np.where(manhattan[:,:,1]!=-2)]
