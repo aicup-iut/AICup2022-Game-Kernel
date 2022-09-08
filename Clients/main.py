@@ -1,5 +1,6 @@
 from os import makedirs
 from enum import Enum
+from secrets import choice
 
 DEBUG = 0
 
@@ -125,10 +126,9 @@ class GameState:
             f.write(self.debug_log)
 
     def get_action(self) -> Action:
-        # write your code here
-        # return the action value
-        return Action.STAY
+        return Action(actions.pop(0))
 
+actions = [9, 1, 8, 5, 5, 7, 3, 0, 0, 2, 8, 9, 5, 1, 7, 0, 10, 9, 10, 5, 1, 2, 10, 11, 11, 10, 1, 1, 11, 6, 5, 0, 9, 1, 0, 1, 3, 3, 11, 9, 0, 11, 7, 0, 0, 10, 5, 1, 7, 5, 5, 0, 7, 2, 1, 10, 11, 1, 3, 8, 5, 8, 9, 2, 7, 7, 2, 5, 8, 8, 10, 7, 1, 0, 6, 11, 2, 4, 8, 2, 10, 8, 6, 7, 8, 6, 2, 10, 11, 4, 0, 5, 4, 0, 3, 2, 3, 9, 6, 7, 11, 3, 7, 4, 11, 6, 11, 3, 4, 9, 4, 8, 3, 3, 3, 1, 6, 0, 2, 7, 7, 6, 7, 3, 2, 8, 3, 2, 0, 4, 10, 4, 7, 11, 4, 7, 3, 1, 11, 10, 9, 8, 0, 9, 7, 4, 9, 8, 2, 11, 0, 5, 2, 6, 10, 4, 10, 0, 11, 7, 0, 4, 7, 4, 5, 2, 8, 2, 7, 0, 6, 6, 4, 2, 7, 0, 7, 8, 9, 11, 2, 0, 6, 2, 8, 8, 0, 4, 5, 1, 8, 7, 1, 4, 0, 3, 6, 7, 8, 2]
 
 if __name__ == '__main__':
     game_state = GameState()

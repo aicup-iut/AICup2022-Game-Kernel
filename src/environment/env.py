@@ -433,53 +433,54 @@ class AICUP2022ENV(gym.Env):
 
     def linear_attack(self, agent, action):
         X, Y = agent.x, agent.y
+        
 
-        if(action == LINEAR_ATTACK_DOWN):
-            (dx, dy) = act_dict[MOVE_DOWN]
-            for i in range(1, self.linear_attack_range+1):
-                x, y = self.coord_transform(X, Y, dx*i, dy*i)
-                if (not self.check_coord_valid(x, y)) or self.main_board[x][y] == WALL:
+        if action == LINEAR_ATTACK_DOWN:
+            dx, dy = act_dict[MOVE_DOWN]
+            for i in range(1, self.linear_attack_range + 1):
+                x, y = self.coord_transform(X, Y, dx * i, dy * i)
+                if (not self.check_coord_valid(x, y)) or self.main_board[x, y] == WALL:
                     break
                 # update attack list:
-                self.attack_board[x][y] = 1
-                if self.main_board[x][y] == AGENT and self.data_board[x][y]//2 != self.data_board[X][Y]//2:
-                    def_agent = self.agents_list[self.data_board[x][y]]
+                self.attack_board[x, y] = 1
+                if self.main_board[x, y] == AGENT and self.data_board[x, y] // 2 != self.data_board[X, Y] // 2:
+                    def_agent = self.agents_list[self.data_board[x, y]]
                     self.hit_agent(agent, def_agent)
-        elif(action == LINEAR_ATTACK_UP):
-            (dx, dy) = act_dict[MOVE_UP]
-            for i in range(1, self.linear_attack_range+1):
-                x, y = self.coord_transform(X, Y, dx*i, dy*i)
-                if (not self.check_coord_valid(x, y)) or self.main_board[x][y] == WALL:
+        elif action == LINEAR_ATTACK_UP:
+            dx, dy = act_dict[MOVE_UP]
+            for i in range(1, self.linear_attack_range + 1):
+                x, y = self.coord_transform(X, Y, dx * i, dy * i)
+                if (not self.check_coord_valid(x, y)) or self.main_board[x, y] == WALL:
                     break
                 # update attack list:
-                self.attack_board[x][y] = 1
-                if self.main_board[x][y] == AGENT and self.data_board[x][y]//2 != self.data_board[X][Y]//2:
-                    def_agent = self.agents_list[self.data_board[x][y]]
+                self.attack_board[x, y] = 1
+                if self.main_board[x, y] == AGENT and self.data_board[x, y] // 2 != self.data_board[X, Y] // 2:
+                    def_agent = self.agents_list[self.data_board[x, y]]
                     self.hit_agent(agent, def_agent)
-        elif(action == LINEAR_ATTACK_RIGHT):
-            (dx, dy) = act_dict[MOVE_RIGHT]
-            for i in range(1, self.linear_attack_range+1):
-                x, y = self.coord_transform(X, Y, dx*i, dy*i)
-                if (not self.check_coord_valid(x, y)) or self.main_board[x][y] == WALL:
+        elif action == LINEAR_ATTACK_RIGHT:
+            dx, dy = act_dict[MOVE_RIGHT]
+            for i in range(1, self.linear_attack_range + 1):
+                x, y = self.coord_transform(X, Y, dx * i, dy * i)
+                if (not self.check_coord_valid(x, y)) or self.main_board[x, y] == WALL:
                     break
                 # update attack list:
-                self.attack_board[x][y] = 1
-                if self.main_board[x][y] == AGENT and self.data_board[x][y]//2 != self.data_board[X][Y]//2:
-                    def_agent = self.agents_list[self.data_board[x][y]]
+                self.attack_board[x, y] = 1
+                if self.main_board[x, y] == AGENT and self.data_board[x, y] // 2 != self.data_board[X, Y] // 2:
+                    def_agent = self.agents_list[self.data_board[x, y]]
                     self.hit_agent(agent, def_agent)
-        elif(action == LINEAR_ATTACK_LEFT):
-            (dx, dy) = act_dict[MOVE_LEFT]
-            for i in range(1, self.linear_attack_range+1):
-                x, y = self.coord_transform(X, Y, dx*i, dy*i)
-                if (not self.check_coord_valid(x, y)) or self.main_board[x][y] == WALL:
+        elif action == LINEAR_ATTACK_LEFT:
+            dx, dy = act_dict[MOVE_LEFT]
+            for i in range(1, self.linear_attack_range + 1):
+                x, y = self.coord_transform(X, Y, dx * i, dy * i)
+                if (not self.check_coord_valid(x, y)) or self.main_board[x, y] == WALL:
                     break
                 # update attack list:
-                self.attack_board[x][y] = 1
-                if self.main_board[x][y] == AGENT and self.data_board[x][y]//2 != self.data_board[X][Y]//2:
-                    def_agent = self.agents_list[self.data_board[x][y]]
+                self.attack_board[x, y] = 1
+                if self.main_board[x, y] == AGENT and self.data_board[x, y] // 2 != self.data_board[X, Y] // 2:
+                    def_agent = self.agents_list[self.data_board[x, y]]
                     self.hit_agent(agent, def_agent)
         agent.action = action
-        agent.alpha = agent.alpha+2
+        agent.alpha = agent.alpha + 2
 
     def ranged_attack(self, attacker: agent):
         r = self.ranged_attack_radius
