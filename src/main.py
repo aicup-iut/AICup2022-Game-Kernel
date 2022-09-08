@@ -24,6 +24,8 @@ if __name__ == '__main__':
                         help='Map for running the game')
     parser.add_argument('--cg', action='store_true',
                         help='Enable cgroups (only available in linux)')
+    parser.add_argument('--visualizer', default=None, type=Path,
+                        help='Path to visualizer')
 
     args = parser.parse_args()
 

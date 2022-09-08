@@ -3,6 +3,8 @@ from json import load, dump
 from process.AgentHandler import AgentHandler
 from random import randrange
 from environment.env import AICUP2022ENV
+from subprocess import Popen
+import sys
 
 
 class GameHandler:
@@ -14,6 +16,7 @@ class GameHandler:
         with open(args.setting) as json_settings:
             self.settings = load(json_settings)
         self.log_path = args.log
+        self.visualizer = args.visualizer
         makedirs(self.log_path, exist_ok=True)
         with open(args.map) as input_map:
             self.map = load(input_map)
@@ -54,6 +57,18 @@ class GameHandler:
             self.step()
         self.final_update_info()
         self.log_jsonify()
+        self.visualize()
+
+
+    def visualize(self):
+        if self.visualizer:
+            proc = Popen(
+                (self.visualizer, self.log_path/'game.json'),
+                stdin=None, stdout=sys.stdout, stderr=sys.stderr,
+                text=True, shell=False, bufsize=1)
+            print(f'Executed the visualizer (pid: {proc.pid})')
+            if proc.wait():
+                raise RuntimeError('Something went wrong in visualizer')
 
     def create_agents(self):
         try:
