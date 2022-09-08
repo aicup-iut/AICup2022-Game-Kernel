@@ -110,7 +110,7 @@ class AICUP2022ENV(gym.Env):
         self.action_space = [spaces.Discrete(5) for _ in range(agents_cnt)]
         self.observation_space = spaces.Box(
             0, 1, (self.x_size, self.y_size), np.int16)
-        self.reset()
+        # self.reset()
 
     def step(self, action):
         done = False
@@ -184,8 +184,8 @@ class AICUP2022ENV(gym.Env):
         # for index,agent in enumerate(self.agents_list):
         #     agent.x,agent.y=X[index],Y[index]
         self.load_map()
-        self.add_gold()
         self.update_board()
+        self.add_gold()
         observation = self.generate_observation()
 
         return (observation, None, None, None)
