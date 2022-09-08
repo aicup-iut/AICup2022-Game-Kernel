@@ -287,7 +287,7 @@ class AICUP2022ENV(gym.Env):
                     temp_observation[i][j] = np.array(
                         [self.main_board[temp_x][temp_y], self.data_board[temp_x][temp_y], temp_x, temp_y], dtype=int)
 
-                    if fog and self.fog_map[temp_x, temp_y] == True and (x, y) == (temp_x, temp_y):
+                    if fog and self.fog_map[temp_x][temp_y] == True and (x, y) == (temp_x, temp_y):
                         temp_observation[i, j] = [FOG, 0, temp_x, temp_y]
                 else:
                     temp_observation[i, j] = [OUT_OF_MAP,
