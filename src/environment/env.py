@@ -287,10 +287,11 @@ class AICUP2022ENV(gym.Env):
                     # data==-2 use for invalid coords
                     temp_observation[i][j] = np.array(
                         [self.main_board[temp_x][temp_y], self.data_board[temp_x][temp_y], temp_x, temp_y], dtype=int)
-                    if self.fog_map[temp_x][temp_y] == True and fog:
-                        temp_observation[i][j] = [FOG, 0, temp_x, temp_y]
+
+                    if fog and self.fog_map[temp_x, temp_y] == True and (x, y) == (temp_x, temp_y):
+                        temp_observation[i, j] = [FOG, 0, temp_x, temp_y]
                 else:
-                    temp_observation[i][j] = [OUT_OF_MAP,
+                    temp_observation[i, j] = [OUT_OF_MAP,
                                               OUT_OF_SIGHT, OUT_OF_MAP, OUT_OF_MAP]
         return temp_observation
 
