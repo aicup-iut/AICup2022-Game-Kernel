@@ -1,5 +1,6 @@
 from os import getcwd, makedirs
 from json import load, dump
+from pathlib import Path
 from process.AgentHandler import AgentHandler
 from random import randrange
 from environment.env import AICUP2022ENV
@@ -15,8 +16,8 @@ class GameHandler:
         self.final_info = {'initial_game_data': {}, 'steps': []}
         with open(args.setting) as json_settings:
             self.settings = load(json_settings)
-        self.log_path = args.log
-        self.visualizer = args.visualizer
+        self.log_path: Path = args.log
+        self.visualizer: Path = args.visualizer
         makedirs(self.log_path, exist_ok=True)
         with open(args.map) as input_map:
             self.map = load(input_map)
@@ -63,12 +64,12 @@ class GameHandler:
     def visualize(self):
         if self.visualizer:
             proc = Popen(
-                (self.visualizer, self.log_path/'game.json'),
+                (self.visualizer, self.log_path.joinpath('game.json').absolute()),
                 stdin=None, stdout=sys.stdout, stderr=sys.stderr,
-                text=True, shell=False, bufsize=1)
+                text=True, shell=False, bufsize=1, cwd=self.visualizer.parent)
             print(f'Executed the visualizer (pid: {proc.pid})')
             if proc.wait():
-                print('Something went wrong in visualizer.\nPlease consider updating the visualizer.', file=sys.stderr)
+                print('Something went wrong.\nPlease consider updating the visualizer.', file=sys.stderr)
 
     def create_agents(self):
         try:
