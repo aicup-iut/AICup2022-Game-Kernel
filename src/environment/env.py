@@ -484,8 +484,8 @@ class AICUP2022ENV(gym.Env):
 
     def ranged_attack(self, attacker: agent):
         r = self.ranged_attack_radius
-        R = int(r*2 + 1)
-        attacker_index = self.data_board[attacker.x][attacker.y]
+        R = int(r * 2 + 1)
+        attacker_index = self.data_board[attacker.x, attacker.y]
         attack_range = self.manhattan_sight(attacker.x, attacker.y, R)
         attack_x = attack_range[:, :, 2][np.where(
             attack_range[:, :, 1] != OUT_OF_SIGHT)]
@@ -498,44 +498,43 @@ class AICUP2022ENV(gym.Env):
         for agent in agents_in_range:
             agent_index = agent[1]
             defender = self.agents_list[agent_index]
-            if attacker_index//2 != agent_index//2:
+            if attacker_index // 2 != agent_index // 2:
                 self.hit_agent(attacker, defender)
         attacker.action = RANGED_ATTACK
-        attacker.alpha = attacker.alpha+2
+        attacker.alpha = attacker.alpha + 2
 
     def hit_agent(self, attacker: agent, defender: agent):
-        attck_effc = min(self.cool_down_rate**attacker.alpha, 1)
-        attack_rate = attck_effc*attacker.atk_lvl / \
-            (attacker.atk_lvl+defender.def_lvl)
-        gold_amount = int(defender.wallet*attack_rate)
+        attck_effc = min(self.cool_down_rate ** attacker.alpha, 1)
+        attack_rate = attck_effc * attacker.atk_lvl / (attacker.atk_lvl + defender.def_lvl)
+        gold_amount = int(defender.wallet * attack_rate)
         defender.wallet -= gold_amount
         attacker.robbed_gold += gold_amount
         gold = self.perimeter_gold_distribution(
             gold_amount, defender.x, defender.y)
         for i in range(3):
             for j in range(3):
-                x, y = self.coord_transform(defender.x, defender.y, i-1, j-1)
+                x, y = self.coord_transform(defender.x, defender.y, i - 1, j - 1)
                 if not self.check_coord_valid(x, y):
                     continue
-                if gold[i][j] > 0:
-                    if self.main_board[i][j] == GOLD or self.main_board[i][j] == EMPTY:
-                        self.main_board[i][j] = GOLD
-                        self.data_board[i][j] += gold[i][j]
-                    elif self.main_board[i][j] == AGENT:
-                        index = self.data_board[i][j]
-                        self.agents_list[index].wallet += gold[i][j]
+                if gold[i, j] > 0:
+                    if self.main_board[i, j] == GOLD or self.main_board[i, j] == EMPTY:
+                        self.main_board[i, j] = GOLD
+                        self.data_board[i, j] += gold[i, j]
+                    elif self.main_board[i, j] == AGENT:
+                        index = self.data_board[i, j]
+                        self.agents_list[index].wallet += gold[i, j]
 
     def perimeter_gold_distribution(self, gold_amount, x, y):
         around_agent = np.zeros((3, 3), dtype=int)
         count = 0
         while count < gold_amount:
             coord = randint(0, 8)
-            dx = coord//3 - 1
+            dx = coord // 3 - 1
             dy = coord % 3 - 1
             temp_x, temp_y = self.coord_transform(x, y, dx, dy)
             if self.check_coord_valid(temp_x, temp_y):
-                if (dx != 0 or dy != 0) and self.main_board[temp_x][temp_y] != WALL and self.main_board[temp_x][temp_y] != TREASURY:
-                    around_agent[dx+1][dy+1] += 1
+                if (dx != 0 or dy != 0) and self.main_board[temp_x, temp_y] != WALL and self.main_board[temp_x, temp_y] != TREASURY:
+                    around_agent[dx+1, dy+1] += 1
                     count += 1
         return around_agent
 
