@@ -137,12 +137,11 @@ class AICUP2022ENV(gym.Env):
             # action converted to coordinations differences dx dy
 
             self.agents_list[agent].action = -1
-            self.agents_list[agent].alpha -= 1
             self.run_action(action[agent], self.agents_list[agent])
             if self.agents_list[agent].action == -1 and action[agent] <= MOVE_LEFT:
                 move_queue.append([action[agent], self.agents_list[agent]])
-            self.agents_list[agent].alpha = max(
-                0, self.agents_list[agent].alpha)
+            self.agents_list[agent].alpha -= 1
+            self.agents_list[agent].alpha = max(0, self.agents_list[agent].alpha)
             self.update_board()
         # repeating actions for unsuccessful moves
         count = 12
@@ -518,11 +517,11 @@ class AICUP2022ENV(gym.Env):
                 if not self.check_coord_valid(x, y):
                     continue
                 if gold[i, j] > 0:
-                    if self.main_board[i, j] == GOLD or self.main_board[i, j] == EMPTY:
-                        self.main_board[i, j] = GOLD
-                        self.data_board[i, j] += gold[i, j]
-                    elif self.main_board[i, j] == AGENT:
-                        index = self.data_board[i, j]
+                    if self.main_board[x, y] == GOLD or self.main_board[x, y] == EMPTY:
+                        self.main_board[x, y] = GOLD
+                        self.data_board[x, y] += gold[i, j]
+                    elif self.main_board[x, y] == AGENT:
+                        index = self.data_board[x, y]
                         self.agents_list[index].wallet += gold[i, j]
 
     def perimeter_gold_distribution(self, gold_amount, x, y):
