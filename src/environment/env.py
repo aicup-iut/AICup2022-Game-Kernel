@@ -420,18 +420,15 @@ class AICUP2022ENV(gym.Env):
             self.ranged_attack(agent)
 
     def move(self, action, agent):
-        dx, dy = act_dict[action]
         # getting agent's coordinations
-        x, y = agent.x, agent.y
-        new_x, new_y = self.coord_transform(x, y, dx, dy)
-        # check the validation of action
+        new_x, new_y = self.coord_transform(agent.x, agent.y, *act_dict[action])
 
+        # check the validation of action
         if self.check_coord_valid(new_x, new_y) and self.check_coords_empty(new_x, new_y):
-            x = new_x
-            y = new_y
+            # updating agent's coordinations
+            agent.x, agent.y = new_x, new_y
             agent.action = action
-        # updating agent's coordinations
-        agent.x, agent.y = x, y
+        
         return self
 
     def linear_attack(self, agent, action):
