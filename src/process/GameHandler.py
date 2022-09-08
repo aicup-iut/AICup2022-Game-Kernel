@@ -68,7 +68,7 @@ class GameHandler:
                 text=True, shell=False, bufsize=1)
             print(f'Executed the visualizer (pid: {proc.pid})')
             if proc.wait():
-                raise RuntimeError('Something went wrong in visualizer')
+                print('Something went wrong in visualizer.\nPlease consider updating the visualizer.', file=sys.stderr)
 
     def create_agents(self):
         try:
