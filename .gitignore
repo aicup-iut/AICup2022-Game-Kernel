@@ -156,8 +156,9 @@ cython_debug/
 .vscode
 
 # executable files
-Clients/*
-!Clients/*.py
-!Clients/*.cpp
-!Clients/*.java
-!Clients/*.cs
+Clients/*/*
+!Clients/Python/*.py
+!Clients/CPP/*.cpp
+!Clients/CPP/*.h
+!Clients/Java/*.java
+!Clients/CSharp/*.cs
