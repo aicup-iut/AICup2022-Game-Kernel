@@ -1,10 +1,6 @@
-import gym
-from gym import error, spaces, utils, logger
-from gym.utils import seeding
+from gym import Env, spaces
+from random import randint, shuffle
 import numpy as np
-from random import randint, sample, shuffle, randrange
-import json
-import os
 
 # map
 EMPTY = 0
@@ -57,7 +53,7 @@ class agent:
         self.robbed_gold = 0
 
 
-class AICUP2022ENV(gym.Env):
+class AICUP2022ENV(Env):
     x_size = None
     y_size = None
     # agents_cnt=None
@@ -110,7 +106,7 @@ class AICUP2022ENV(gym.Env):
         self.action_space = [spaces.Discrete(5) for _ in range(agents_cnt)]
         self.observation_space = spaces.Box(
             0, 1, (self.x_size, self.y_size), np.int16)
-        self.reset()
+        # self.reset()
 
     def step(self, action):
         done = False
@@ -137,10 +133,10 @@ class AICUP2022ENV(gym.Env):
             # action converted to coordinations differences dx dy
 
             self.agents_list[agent].action = -1
-            self.agents_list[agent].alpha -= 1
             self.run_action(action[agent], self.agents_list[agent])
             if self.agents_list[agent].action == -1 and action[agent] <= MOVE_LEFT:
                 move_queue.append([action[agent], self.agents_list[agent]])
+            self.agents_list[agent].alpha -= 1
             self.agents_list[agent].alpha = max(
                 0, self.agents_list[agent].alpha)
             self.update_board()
@@ -185,8 +181,9 @@ class AICUP2022ENV(gym.Env):
         # for index,agent in enumerate(self.agents_list):
         #     agent.x,agent.y=X[index],Y[index]
         self.load_map()
-        self.add_gold()
+        # self.add_gold()
         self.update_board()
+        self.add_gold()
         observation = self.generate_observation()
 
         return (observation, None, None, None)
@@ -277,7 +274,8 @@ class AICUP2022ENV(gym.Env):
                     temp_observation[i][j] = np.array(
                         [self.main_board[temp_x][temp_y], self.data_board[temp_x][temp_y], temp_x, temp_y], dtype=int)
                     if self.fog_map[temp_x][temp_y] == True and fog:
-                        temp_observation[i][j] = [FOG, 0, temp_x, temp_y]
+                        if not(temp_x == x and temp_y == y):
+                            temp_observation[i][j] = [FOG, 0, temp_x, temp_y]
                 else:
                     temp_observation[i][j] = [OUT_OF_MAP,
                                               OUT_OF_SIGHT, OUT_OF_MAP, OUT_OF_MAP]
@@ -343,6 +341,16 @@ class AICUP2022ENV(gym.Env):
             x, y = agent.x, agent.y
             manhattan = self.manhattan_sight(
                 x, y, self.agent_sight_range, fog=True)
+            not_gold_x = np.where(manhattan[:, :, 0] != GOLD)[0]
+            not_gold_y = np.where(manhattan[:, :, 0] != GOLD)[1]
+            manhattan[not_gold_x, not_gold_y, 1] = -1
+            r = (self.agent_sight_range-1)//2
+            for agent_temp in self.agents_list:
+                if abs(agent_temp.x-x)+abs(agent_temp.y-y) <= r:
+                    new_x = agent_temp.x-x+r
+                    new_y = agent_temp.y-y+r
+                    if manhattan[new_x, new_y, 0] != FOG:
+                        manhattan[new_x, new_y, 1] = agent_temp.id
             manhattan = manhattan.reshape(
                 np.shape(manhattan)[0]*np.shape(manhattan)[1], np.shape(manhattan)[2])
             # manhattan=manhattan[np.where(manhattan[:,:,1]!=-2)]
@@ -499,12 +507,12 @@ class AICUP2022ENV(gym.Env):
                 if not self.check_coord_valid(x, y):
                     continue
                 if gold[i][j] > 0:
-                    if self.main_board[i][j] == GOLD or self.main_board[i][j] == EMPTY:
-                        self.main_board[i][j] = GOLD
-                        self.data_board[i][j] += gold[i][j]
-                    elif self.main_board[i][j] == AGENT:
-                        index = self.data_board[i][j]
-                        self.agents_list[index].wallet += gold[i][j]
+                    if self.main_board[x, y] == GOLD or self.main_board[x, y] == EMPTY:
+                        self.main_board[x, y] = GOLD
+                        self.data_board[x, y] += gold[i][j]
+                    elif self.main_board[x, y] == AGENT:
+                        index = self.data_board[x, y]
+                        self.agents_list[index].wallet += int(gold[i][j])
 
     def perimeter_gold_distribution(self, gold_amount, x, y):
         around_agent = np.zeros((3, 3), dtype=int)
