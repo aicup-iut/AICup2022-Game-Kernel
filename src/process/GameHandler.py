@@ -69,7 +69,7 @@ class GameHandler:
                 text=True, shell=False, bufsize=1, cwd=self.visualizer.parent)
             print(f'Waiting for the visualizer to exit. (pid: {proc.pid})')
             if proc.wait():
-                print('Something went wrong.\nPlease consider updating the visualizer.', file=sys.stderr)
+                print('Visualizer exited abnormally.\nPlease consider updating the visualizer.', file=sys.stderr)
 
     def create_agents(self):
         try:
