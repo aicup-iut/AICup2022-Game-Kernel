@@ -205,8 +205,7 @@ class AICUP2022ENV(gym.Env):
         # if (x, y) in agents:
         #     return False
         # return True
-
-        return self.main_board[x][y] in valid_obstacle and (x, y) not in agents
+        return self.main_board[x][y] in valid_obstacle and (x, y) not in agents and not self.main_board[x, y] == WALL
 
     def check_coord_valid(self, x, y):
         # # TODO
@@ -228,7 +227,7 @@ class AICUP2022ENV(gym.Env):
         # for i in range(self.x_size):
         #     for j in range(self.y_size):
         #         self.main_board[i][j] = 0
-        self.main_board = np.zeros((self.x_size, self.y_size), dtype=int)
+        self.main_board = np.zeros((self.x_size, self.y_size), dtype=np.int16)
 
         for index, agent in enumerate(self.agents_list):
             x, y = agent.x, agent.y
@@ -258,7 +257,7 @@ class AICUP2022ENV(gym.Env):
         
         # for x, y in self.treasury_coord:
         #     self.main_board[x, y] = TREASURY
-        self.main_board[np.array(self.treasury_coord)] = TREASURY
+        self.main_board[tuple(zip(*self.treasury_coord))] = TREASURY
 
         # for i in range(self.x_size):
         #     for j in range(self.y_size):
@@ -313,8 +312,7 @@ class AICUP2022ENV(gym.Env):
         #     for j in range(self.y_size):
         #         if wall_list[i][j]:
         #             self.main_board[i][j] = WALL
-        #print(np.array(wall_list))
-        self.main_board[np.where(wall_list == 1)]=WALL
+        self.main_board[np.where(wall_list == 1)] = WALL
 
     def add_gold(self):
         # current_gold = 0
