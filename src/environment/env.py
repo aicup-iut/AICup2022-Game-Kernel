@@ -1,10 +1,6 @@
-import gym
-from gym import error, spaces, utils, logger
-from gym.utils import seeding
+from gym import Env, spaces
+from random import randint, shuffle
 import numpy as np
-from random import randint, sample, shuffle, randrange
-import json
-import os
 
 # map
 EMPTY = 0
@@ -57,7 +53,7 @@ class agent:
         self.robbed_gold = 0
 
 
-class AICUP2022ENV(gym.Env):
+class AICUP2022ENV(Env):
     x_size = None
     y_size = None
     # agents_cnt=None
@@ -110,7 +106,7 @@ class AICUP2022ENV(gym.Env):
         self.action_space = [spaces.Discrete(5) for _ in range(agents_cnt)]
         self.observation_space = spaces.Box(
             0, 1, (self.x_size, self.y_size), np.int16)
-        # self.reset()
+        # # self.reset()
 
     def step(self, action):
         done = False
@@ -291,17 +287,16 @@ class AICUP2022ENV(gym.Env):
             x, y = agent.x, agent.y
             manhattan = self.manhattan_sight(
                 x, y, self.agent_sight_range, fog=True)
-
-            not_gold_x = np.where(manhattan[:,:,0] != GOLD)[0]
-            not_gold_y = np.where(manhattan[:,:,0] != GOLD)[1]
+            not_gold_x = np.where(manhattan[:, :, 0] != GOLD)[0]
+            not_gold_y = np.where(manhattan[:, :, 0] != GOLD)[1]
             manhattan[not_gold_x, not_gold_y, 1] = -1
-            r = (self.agent_sight_range - 1) / 2   
+            r = (self.agent_sight_range-1)//2
             for agent_temp in self.agents_list:
-                if  abs(agent_temp.x - x) + abs(agent_temp.y - y) <= r:
-                    manhattan[
-                        int(agent_temp.x - x + r), int(agent_temp.y - y + r), 1
-                        ] = agent_temp.id
-
+                if abs(agent_temp.x-x)+abs(agent_temp.y-y) <= r:
+                    new_x = agent_temp.x-x+r
+                    new_y = agent_temp.y-y+r
+                    if manhattan[new_x, new_y, 0] != FOG:
+                        manhattan[new_x, new_y, 1] = agent_temp.id
             manhattan = manhattan.reshape(
                 np.shape(manhattan)[0]*np.shape(manhattan)[1], np.shape(manhattan)[2])
             # manhattan=manhattan[np.where(manhattan[:,:,1]!=-2)]
