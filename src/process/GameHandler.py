@@ -67,7 +67,7 @@ class GameHandler:
                 (self.visualizer, self.log_path.joinpath('game.json').absolute()),
                 stdin=None, stdout=sys.stdout, stderr=sys.stderr,
                 text=True, shell=False, bufsize=1, cwd=self.visualizer.parent)
-            print(f'Executed the visualizer (pid: {proc.pid})')
+            print(f'Waiting for the visualizer to exit. (pid: {proc.pid})')
             if proc.wait():
                 print('Something went wrong.\nPlease consider updating the visualizer.', file=sys.stderr)
 
