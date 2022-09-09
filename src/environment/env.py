@@ -116,18 +116,12 @@ class AICUP2022ENV(gym.Env):
         done = False
         # if rounds is zero at start of step
         # ignore actions
-        if self.rounds <= 0:
-            done = True
-            self.winner = self.decide_winner()
-            # if self.teams[0]['wallet']>self.teams[1]['wallet']:
-            #     self.winner=0
-            # elif self.teams[1]['wallet']>self.teams[0]['wallet']:
-            #     self.winner=1
-            # elif self.teams[1]['wallet']==self.teams[0]['wallet']:
-            #     self.winner=randint(0,1)
-            observation = self.generate_observation()
-            info = self.generate_info()
-            return (observation, None, done, info)
+        # if self.rounds <= 0:
+        #     done = True
+        #     self.winner = self.decide_winner()
+        #     observation = self.generate_observation()
+        #     info = self.generate_info()
+        #     return (observation, None, done, info)
 
         moved = [False for i in range(self.agents_cnt)]
         self.attack_board = np.zeros((self.x_size, self.y_size), dtype=int)
@@ -135,7 +129,6 @@ class AICUP2022ENV(gym.Env):
         move_queue = []
         for agent in agents_order:
             # action converted to coordinations differences dx dy
-
             self.agents_list[agent].action = -1
             self.run_action(action[agent], self.agents_list[agent])
             if self.agents_list[agent].action == -1 and action[agent] <= MOVE_LEFT:
@@ -158,15 +151,9 @@ class AICUP2022ENV(gym.Env):
         self.update_board()
         self.add_gold()
         self.rounds -= 1
-        if self.rounds == 0:
+        if not self.rounds:
             done = True
             self.winner = self.decide_winner()
-            # if self.teams[0]['wallet']>self.teams[1]['wallet']:
-            #     self.winner=0
-            # elif self.teams[1]['wallet']>self.teams[0]['wallet']:
-            #     self.winner=1
-            # elif self.teams[1]['wallet']==self.teams[0]['wallet']:
-            #     self.winner=randint(0,1)
             observation = self.generate_observation()
             info = self.generate_info()
             return (observation, None, done, info)
@@ -199,35 +186,16 @@ class AICUP2022ENV(gym.Env):
     def check_coords_empty(self, x, y):
         valid_obstacle = [EMPTY, GOLD, TREASURY]
         agents = [(i.x, i.y) for i in self.agents_list]
-
-        # if self.main_board[x][y] not in valid_obstacle:
-        #     return False
-        # if (x, y) in agents:
-        #     return False
-        # return True
-        return self.main_board[x][y] in valid_obstacle and (x, y) not in agents and not self.main_board[x, y] == WALL
+        return self.main_board[x][y] in valid_obstacle and (x, y) not in agents
 
     def check_coord_valid(self, x, y):
-        # # TODO
-        # # check walls
-        # # valid_obstacle=[EMPTY,GOLD, TREASURY]
-        # if x < 0 or x >= self.x_size:
-        #     return False
-        # if y < 0 or y >= self.y_size:
-        #     return False
-        # # if self.main_board[x][y] not in valid_obstacle:
-        # #     return False
-        # return True
         return 0 <= x < self.x_size and 0 <= y < self.y_size
 
     def update_board(self):
         # update the board with agents' coordinations
         # TODO
         gold_map = np.copy(self.main_board)
-        # for i in range(self.x_size):
-        #     for j in range(self.y_size):
-        #         self.main_board[i][j] = 0
-        self.main_board = np.zeros((self.x_size, self.y_size), dtype=np.int16)
+        self.main_board = np.zeros((self.x_size, self.y_size), dtype=int)
 
         for index, agent in enumerate(self.agents_list):
             x, y = agent.x, agent.y
@@ -240,29 +208,16 @@ class AICUP2022ENV(gym.Env):
                 gold_map[x][y] = AGENT
             self.main_board[x][y] = AGENT
             self.data_board[x][y] = index
-        # update every agent's safe wallet with team wallet
 
+        # update every agent's safe wallet with team wallet
         for index, agent in enumerate(self.agents_list):
             agent.safe_wallet = self.teams[index//2]['wallet']
-
-        # for i in range(self.x_size):
-        #     for j in range(self.y_size):
-        #         if gold_map[i, j] == GOLD:
-        #             self.main_board[i, j] = GOLD
-        #         if gold_map[i, j] == WALL:
-        #             self.main_board[i, j] = WALL
 
         self.main_board[np.where(gold_map == GOLD)] = GOLD
         self.main_board[np.where(gold_map == WALL)] = WALL
         
-        # for x, y in self.treasury_coord:
-        #     self.main_board[x, y] = TREASURY
         self.main_board[tuple(zip(*self.treasury_coord))] = TREASURY
 
-        # for i in range(self.x_size):
-        #     for j in range(self.y_size):
-        #         if self.main_board[i, j] == 0:
-        #             self.data_board[i, j] = 0
         self.data_board[np.where(self.main_board == 0)] = 0
 
         return self
@@ -295,42 +250,16 @@ class AICUP2022ENV(gym.Env):
 
     def coord_transform(self, x, y, dx, dy):
         # return new coordination after moving in the board by from
-        # (x,y) to (x+dx,y+dy)
-        # new_x = x + dx
-        # new_y = y + dy
-        # top and bottom edges are connected
-        # if new_y >=self.y_size or new_y<0:
-        #     new_y = (new_y % self.y_size)
-        # # left and right edges likewise
-        # if new_x >= self.x_size or new_x < 0:
-        #     new_x =  (new_x %self.x_size)
         return x + dx, y + dy
 
     def add_wall(self, wall_list: np.ndarray):
-        # print(wall_list)
-        # for i in range(self.x_size):
-        #     for j in range(self.y_size):
-        #         if wall_list[i][j]:
-        #             self.main_board[i][j] = WALL
         self.main_board[np.where(wall_list == 1)] = WALL
 
     def add_gold(self):
-        # current_gold = 0
-        # for i in self.main_board:
-        #     for j in i:
-        #         if j == GOLD:
-        #             current_gold += 1
         current_gold = np.count_nonzero(self.main_board == GOLD)
 
         count = self.gold_count - current_gold
         empty_coords = self.empty_coords_list(count)
-        
-        # count -= 1
-        # while count >= 0:
-        #     X, Y = empty_coords[count]
-        #     self.main_board[X, Y] = 2
-        #     self.data_board[X, Y] = 1
-        #     count -= 1
 
         for x, y in empty_coords:
             self.main_board[x, y] = 2
