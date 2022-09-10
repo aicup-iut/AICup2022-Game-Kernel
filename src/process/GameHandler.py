@@ -64,9 +64,9 @@ class GameHandler:
     def visualize(self):
         if self.visualizer:
             proc = Popen(
-                (self.visualizer, self.log_path.joinpath('game.json').absolute()),
+                (self.visualizer.absolute(), self.log_path.absolute().joinpath('game.json')),
                 stdin=None, stdout=sys.stdout, stderr=sys.stderr,
-                text=True, shell=False, bufsize=1, cwd=self.visualizer.parent)
+                text=True, shell=False, bufsize=1, cwd=self.visualizer.absolute().parent)
             print(f'Waiting for the visualizer to exit. (pid: {proc.pid})')
             if proc.wait():
                 print('Visualizer exited abnormally.\nPlease consider updating the visualizer.', file=sys.stderr)
