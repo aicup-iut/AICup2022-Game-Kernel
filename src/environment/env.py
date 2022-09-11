@@ -256,8 +256,8 @@ class AICUP2022ENV(gym.Env):
         self.main_board[np.where(wall_list == 1)] = WALL
 
     def add_gold(self):
-        current_gold = np.count_nonzero(self.main_board == GOLD)
-
+        #current_gold = np.count_nonzero(self.main_board == GOLD)
+        current_gold = self.data_board[np.where(self.main_board == GOLD)].sum()
         count = self.gold_count - current_gold
         empty_coords = self.empty_coords_list(count)
 
