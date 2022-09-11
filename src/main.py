@@ -8,9 +8,9 @@ from pathlib import Path
 
 if __name__ == '__main__':
     parser = ArgumentParser(description='args')
-    parser.add_argument('-p1', default=Path(r'Clients/main.py'), type=Path,
+    parser.add_argument('-p1', default=Path(r'Clients/Python/main.py'), type=Path,
                         help='First player path')
-    parser.add_argument('-p2', default=Path(r'Clients/main.py'), type=Path,
+    parser.add_argument('-p2', default=Path(r'Clients/Python/main.py'), type=Path,
                         help='Second player path')
     parser.add_argument('-n1', default='Team 1', type=str,
                         help='First player name')
