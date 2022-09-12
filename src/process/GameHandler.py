@@ -1,8 +1,8 @@
-from os import getcwd, makedirs
+from os import makedirs
 from json import load, dump
 from pathlib import Path
-from process.AgentHandler import AgentHandler
 from random import randrange
+from process.AgentHandler import AgentHandler
 from environment.env import AICUP2022ENV
 from subprocess import Popen
 import sys
@@ -16,8 +16,10 @@ class GameHandler:
         self.final_info = {'initial_game_data': {}, 'steps': []}
         with open(args.setting) as json_settings:
             self.settings = load(json_settings)
+            
         self.log_path: Path = args.log
         self.visualizer: Path = args.visualizer
+
         makedirs(self.log_path, exist_ok=True)
         with open(args.map) as input_map:
             self.map = load(input_map)
@@ -59,19 +61,6 @@ class GameHandler:
         self.final_update_info()
         self.log_jsonify()
         self.visualize()
-
-
-    def visualize(self):
-        if self.visualizer:
-            exec_path = self.visualizer.absolute()
-            proc = Popen(
-                (exec_path, self.log_path.absolute().joinpath('game.json')),
-                stdin=None, stdout=sys.stdout, stderr=sys.stderr,
-                text=True, shell=False, bufsize=1, cwd=exec_path.parent
-                )
-            print(f'Waiting for the visualizer to exit. (pid: {proc.pid})')
-            if proc.wait():
-                print('Visualizer exited abnormally.\nPlease consider updating the visualizer.', file=sys.stderr)
 
     def create_agents(self):
         try:
@@ -189,3 +178,16 @@ class GameHandler:
     def log_jsonify(self):
         with open(f'{self.log_path}/game.json', 'w', encoding='utf8') as json_file:
             dump(self.final_info, json_file, ensure_ascii=False, indent='\t')
+            
+    def visualize(self):
+        if self.visualizer:
+            exec_path = self.visualizer.absolute()
+            proc = Popen(
+                (exec_path, self.log_path.absolute().joinpath('game.json')),
+                stdin=None, stdout=sys.stdout, stderr=sys.stderr,
+                text=True, shell=False, bufsize=1, cwd=exec_path.parent
+                )
+            print(f'Waiting for the visualizer to exit. (pid: {proc.pid})')
+            if proc.wait():
+                print('Visualizer exited abnormally.\nPlease consider updating the visualizer.', file=sys.stderr)
+                

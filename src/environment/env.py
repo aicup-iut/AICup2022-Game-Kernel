@@ -106,7 +106,7 @@ class AICUP2022ENV(Env):
         self.action_space = [spaces.Discrete(5) for _ in range(agents_cnt)]
         self.observation_space = spaces.Box(
             0, 1, (self.x_size, self.y_size), np.int16)
-        # # self.reset()
+        # self.reset()
 
     def step(self, action):
         done = False
@@ -131,6 +131,7 @@ class AICUP2022ENV(Env):
                 move_queue.append([action[agent], self.agents_list[agent]])
             self.agents_list[agent].alpha -= 1
             self.agents_list[agent].alpha = max(0, self.agents_list[agent].alpha)
+
             self.update_board()
         # repeating actions for unsuccessful moves
         count = 12
@@ -167,6 +168,7 @@ class AICUP2022ENV(Env):
         # for index,agent in enumerate(self.agents_list):
         #     agent.x,agent.y=X[index],Y[index]
         self.load_map()
+
         self.update_board()
         self.add_gold()
         observation = self.generate_observation()

@@ -2,6 +2,7 @@
 from argparse import ArgumentParser
 from sys import platform
 from time import time
+from pathlib import Path
 from process.GameHandler import GameHandler
 from pathlib import Path
 
