@@ -73,11 +73,9 @@ $ sudo python3 src/main.py -p1 <player1-path> -p2 <player2-path> --cg
 ساختار یک نمونه کلاینت مولتی فایل پایتون معتبر می‌تواند به صورت زیر باشد:
 
 ```
-code.zip
+myCode.zip
 |─── main.py
 │─── MyModule1.py
 |─── MyModule2.py
 └─── model
 ```
-
-### **_توجه: کلاینت مولتی فایل در حال حاضر فقط برای `python` در دسترس است._**
