@@ -177,12 +177,13 @@ class GameHandler:
             dump(self.final_info, json_file, ensure_ascii=False, indent='\t')
 
     def visualize(self):
-        if self.visualizer:
-            proc = Popen(
-                (self.visualizer, self.log_path.joinpath('game.json').absolute()),
-                stdin=None, stdout=stdout, stderr=stderr,
-                text=True, shell=False, bufsize=1, cwd=self.visualizer.parent)
-            print(f'Executed the visualizer (pid: {proc.pid})')
-            if proc.wait():
-                print('Something went wrong...\nPlease consider updating the visualizer.',
-                      file=stderr)
+        if not self.visualizer:
+            return
+        exec_path = self.visualizer.absolute()
+        proc = Popen((exec_path, self.log_path.absolute().joinpath('game.json')),
+                     stdin=None, stdout=stdout, stderr=stderr, text=True,
+                     shell=False, bufsize=1, cwd=exec_path.parent)
+        print(f'Waiting for the visualizer to exit. (pid: {proc.pid})')
+        if proc.wait():
+            print('Visualizer exited abnormally.\nPlease consider updating the visualizer.',
+                  file=stderr)
