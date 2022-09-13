@@ -157,6 +157,7 @@ cython_debug/
 
 # executable files
 Clients/*/*
+!Clients/*/model
 !Clients/Python/*.py
 !Clients/CPP/*.cpp
 !Clients/CPP/*.h

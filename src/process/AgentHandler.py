@@ -8,9 +8,10 @@ from pathlib import Path
 class AgentHandler:
     def __init__(self, executable_path: Path, settings, map_size):
         try:
-            self.process = Popen(self.exec_command(executable_path),
+            self.process = Popen(self.exec_command(executable_path.absolute()),
                                  stdin=PIPE, stdout=PIPE, stderr=STDOUT,
-                                 text=True, shell=False, bufsize=1)
+                                 text=True, shell=False, bufsize=1,
+                                 cwd=executable_path.parent)
             self.settings = settings
             self.isFinished = False
             self.writer(self.settings['rounds'])
