@@ -112,18 +112,12 @@ class AICUP2022ENV(Env):
         done = False
         # if rounds is zero at start of step
         # ignore actions
-        if self.rounds <= 0:
-            done = True
-            self.winner = self.decide_winner()
-            # if self.teams[0]['wallet']>self.teams[1]['wallet']:
-            #     self.winner=0
-            # elif self.teams[1]['wallet']>self.teams[0]['wallet']:
-            #     self.winner=1
-            # elif self.teams[1]['wallet']==self.teams[0]['wallet']:
-            #     self.winner=randint(0,1)
-            observation = self.generate_observation()
-            info = self.generate_info()
-            return (observation, None, done, info)
+        # if self.rounds <= 0:
+        #     done = True
+        #     self.winner = self.decide_winner()
+        #     observation = self.generate_observation()
+        #     info = self.generate_info()
+        #     return (observation, None, done, info)
 
         moved = [False for i in range(self.agents_cnt)]
         self.attack_board = np.zeros((self.x_size, self.y_size), dtype=int)
@@ -131,7 +125,6 @@ class AICUP2022ENV(Env):
         move_queue = []
         for agent in agents_order:
             # action converted to coordinations differences dx dy
-
             self.agents_list[agent].action = -1
             self.run_action(action[agent], self.agents_list[agent])
             if self.agents_list[agent].action == -1 and action[agent] <= MOVE_LEFT:
@@ -139,6 +132,7 @@ class AICUP2022ENV(Env):
             self.agents_list[agent].alpha -= 1
             self.agents_list[agent].alpha = max(
                 0, self.agents_list[agent].alpha)
+
             self.update_board()
         # repeating actions for unsuccessful moves
         count = 12
@@ -155,15 +149,9 @@ class AICUP2022ENV(Env):
         self.update_board()
         self.add_gold()
         self.rounds -= 1
-        if self.rounds == 0:
+        if not self.rounds:
             done = True
             self.winner = self.decide_winner()
-            # if self.teams[0]['wallet']>self.teams[1]['wallet']:
-            #     self.winner=0
-            # elif self.teams[1]['wallet']>self.teams[0]['wallet']:
-            #     self.winner=1
-            # elif self.teams[1]['wallet']==self.teams[0]['wallet']:
-            #     self.winner=randint(0,1)
             observation = self.generate_observation()
             info = self.generate_info()
             return (observation, None, done, info)
@@ -181,7 +169,7 @@ class AICUP2022ENV(Env):
         # for index,agent in enumerate(self.agents_list):
         #     agent.x,agent.y=X[index],Y[index]
         self.load_map()
-        # self.add_gold()
+
         self.update_board()
         self.add_gold()
         observation = self.generate_observation()
@@ -197,32 +185,16 @@ class AICUP2022ENV(Env):
     def check_coords_empty(self, x, y):
         valid_obstacle = [EMPTY, GOLD, TREASURY]
         agents = [(i.x, i.y) for i in self.agents_list]
-
-        if self.main_board[x][y] not in valid_obstacle:
-            return False
-        if (x, y) in agents:
-            return False
-        return True
+        return self.main_board[x][y] in valid_obstacle and (x, y) not in agents
 
     def check_coord_valid(self, x, y):
-        # TODO
-        # check walls
-        # valid_obstacle=[EMPTY,GOLD, TREASURY]
-        if x < 0 or x >= self.x_size:
-            return False
-        if y < 0 or y >= self.y_size:
-            return False
-        # if self.main_board[x][y] not in valid_obstacle:
-        #     return False
-        return True
+        return 0 <= x < self.x_size and 0 <= y < self.y_size
 
     def update_board(self):
         # update the board with agents' coordinations
         # TODO
         gold_map = np.copy(self.main_board)
-        for i in range(self.x_size):
-            for j in range(self.y_size):
-                self.main_board[i][j] = 0
+        self.main_board = np.zeros((self.x_size, self.y_size), dtype=int)
 
         for index, agent in enumerate(self.agents_list):
             x, y = agent.x, agent.y
@@ -235,23 +207,17 @@ class AICUP2022ENV(Env):
                 gold_map[x][y] = AGENT
             self.main_board[x][y] = AGENT
             self.data_board[x][y] = index
-        # update every agent's safe wallet with team wallet
 
+        # update every agent's safe wallet with team wallet
         for index, agent in enumerate(self.agents_list):
             agent.safe_wallet = self.teams[index//2]['wallet']
 
-        for i in range(self.x_size):
-            for j in range(self.y_size):
-                if gold_map[i][j] == GOLD:
-                    self.main_board[i][j] = GOLD
-                if gold_map[i][j] == WALL:
-                    self.main_board[i][j] = WALL
-        for coord in self.treasury_coord:
-            self.main_board[coord[0]][coord[1]] = TREASURY
-        for i in range(self.x_size):
-            for j in range(self.y_size):
-                if self.main_board[i][j] == 0:
-                    self.data_board[i][j] = 0
+        self.main_board[np.where(gold_map == GOLD)] = GOLD
+        self.main_board[np.where(gold_map == WALL)] = WALL
+
+        self.main_board[tuple(zip(*self.treasury_coord))] = TREASURY
+
+        self.data_board[np.where(self.main_board == 0)] = 0
 
         return self
 
@@ -273,48 +239,31 @@ class AICUP2022ENV(Env):
                     # data==-2 use for invalid coords
                     temp_observation[i][j] = np.array(
                         [self.main_board[temp_x][temp_y], self.data_board[temp_x][temp_y], temp_x, temp_y], dtype=int)
-                    if self.fog_map[temp_x][temp_y] == True and fog:
-                        if not(temp_x == x and temp_y == y):
-                            temp_observation[i][j] = [FOG, 0, temp_x, temp_y]
+
+                    if fog and self.fog_map[temp_x][temp_y] == True and (x, y) != (temp_x, temp_y):
+                        temp_observation[i, j] = [FOG, 0, temp_x, temp_y]
                 else:
-                    temp_observation[i][j] = [OUT_OF_MAP,
+                    temp_observation[i, j] = [OUT_OF_MAP,
                                               OUT_OF_SIGHT, OUT_OF_MAP, OUT_OF_MAP]
         return temp_observation
 
     def coord_transform(self, x, y, dx, dy):
         # return new coordination after moving in the board by from
-        # (x,y) to (x+dx,y+dy)
-        new_x = x + dx
-        new_y = y + dy
-        # top and bottom edges are connected
-        # if new_y >=self.y_size or new_y<0:
-        #     new_y = (new_y % self.y_size)
-        # # left and right edges likewise
-        # if new_x >= self.x_size or new_x < 0:
-        #     new_x =  (new_x %self.x_size)
-        return (new_x, new_y)
+        return x + dx, y + dy
 
-    def add_wall(self, wall_list):
-        for i in range(self.x_size):
-            for j in range(self.y_size):
-                if wall_list[i][j]:
-                    self.main_board[i][j] = WALL
-        # self.main_board[np.where(wall_list==True)]=WALL
+    def add_wall(self, wall_list: np.ndarray):
+        self.main_board[np.where(wall_list == 1)] = WALL
 
     def add_gold(self):
-        current_gold = 0
-        for i in self.main_board:
-            for j in i:
-                if j == GOLD:
-                    current_gold += 1
-        count = self.gold_count-current_gold
+        #current_gold = np.count_nonzero(self.main_board == GOLD)
+        current_gold = self.data_board[np.where(self.main_board == GOLD)].sum()
+        count = self.gold_count - current_gold
         empty_coords = self.empty_coords_list(count)
-        count -= 1
-        while count >= 0:
-            X, Y = empty_coords[count]
-            self.main_board[X][Y] = 2
-            self.data_board[X][Y] = 1
-            count -= 1
+
+        for x, y in empty_coords:
+            self.main_board[x, y] = 2
+            self.data_board[x, y] = 1
+
         return self
 
     def empty_coords_list(self, count):
@@ -386,7 +335,7 @@ class AICUP2022ENV(Env):
         self.treasury_coord = self.initialize_treasury(
             conf_dic["treasury_coordinate"][0], conf_dic["treasury_coordinate"][1])
         walls = conf_dic["walls"]
-        self.add_wall(walls)
+        self.add_wall(np.array(walls))
 
     def run_action(self, action, agent):
 
@@ -407,74 +356,72 @@ class AICUP2022ENV(Env):
             self.ranged_attack(agent)
 
     def move(self, action, agent):
-        dx, dy = act_dict[action]
-        # getting agent's coordinations
-        x, y = agent.x, agent.y
-        new_x, new_y = self.coord_transform(x, y, dx, dy)
-        # check the validation of action
+        # getting new coordinations
+        new_x, new_y = self.coord_transform(
+            agent.x, agent.y, *act_dict[action])
 
+        # check the validation of action
         if self.check_coord_valid(new_x, new_y) and self.check_coords_empty(new_x, new_y):
-            x = new_x
-            y = new_y
+            # updating agent's coordinations
+            agent.x, agent.y = new_x, new_y
             agent.action = action
-        # updating agent's coordinations
-        agent.x, agent.y = x, y
+
         return self
 
     def linear_attack(self, agent, action):
         X, Y = agent.x, agent.y
 
-        if(action == LINEAR_ATTACK_DOWN):
-            (dx, dy) = act_dict[MOVE_DOWN]
-            for i in range(1, self.linear_attack_range+1):
-                x, y = self.coord_transform(X, Y, dx*i, dy*i)
-                if (not self.check_coord_valid(x, y)) or self.main_board[x][y] == WALL:
+        if action == LINEAR_ATTACK_DOWN:
+            dx, dy = act_dict[MOVE_DOWN]
+            for i in range(1, self.linear_attack_range + 1):
+                x, y = self.coord_transform(X, Y, dx * i, dy * i)
+                if (not self.check_coord_valid(x, y)) or self.main_board[x, y] == WALL:
                     break
                 # update attack list:
-                self.attack_board[x][y] = 1
-                if self.main_board[x][y] == AGENT and self.data_board[x][y]//2 != self.data_board[X][Y]//2:
-                    def_agent = self.agents_list[self.data_board[x][y]]
+                self.attack_board[x, y] = 1
+                if self.main_board[x, y] == AGENT and self.data_board[x, y] // 2 != self.data_board[X, Y] // 2:
+                    def_agent = self.agents_list[self.data_board[x, y]]
                     self.hit_agent(agent, def_agent)
-        elif(action == LINEAR_ATTACK_UP):
-            (dx, dy) = act_dict[MOVE_UP]
-            for i in range(1, self.linear_attack_range+1):
-                x, y = self.coord_transform(X, Y, dx*i, dy*i)
-                if (not self.check_coord_valid(x, y)) or self.main_board[x][y] == WALL:
+        elif action == LINEAR_ATTACK_UP:
+            dx, dy = act_dict[MOVE_UP]
+            for i in range(1, self.linear_attack_range + 1):
+                x, y = self.coord_transform(X, Y, dx * i, dy * i)
+                if (not self.check_coord_valid(x, y)) or self.main_board[x, y] == WALL:
                     break
                 # update attack list:
-                self.attack_board[x][y] = 1
-                if self.main_board[x][y] == AGENT and self.data_board[x][y]//2 != self.data_board[X][Y]//2:
-                    def_agent = self.agents_list[self.data_board[x][y]]
+                self.attack_board[x, y] = 1
+                if self.main_board[x, y] == AGENT and self.data_board[x, y] // 2 != self.data_board[X, Y] // 2:
+                    def_agent = self.agents_list[self.data_board[x, y]]
                     self.hit_agent(agent, def_agent)
-        elif(action == LINEAR_ATTACK_RIGHT):
-            (dx, dy) = act_dict[MOVE_RIGHT]
-            for i in range(1, self.linear_attack_range+1):
-                x, y = self.coord_transform(X, Y, dx*i, dy*i)
-                if (not self.check_coord_valid(x, y)) or self.main_board[x][y] == WALL:
+        elif action == LINEAR_ATTACK_RIGHT:
+            dx, dy = act_dict[MOVE_RIGHT]
+            for i in range(1, self.linear_attack_range + 1):
+                x, y = self.coord_transform(X, Y, dx * i, dy * i)
+                if (not self.check_coord_valid(x, y)) or self.main_board[x, y] == WALL:
                     break
                 # update attack list:
-                self.attack_board[x][y] = 1
-                if self.main_board[x][y] == AGENT and self.data_board[x][y]//2 != self.data_board[X][Y]//2:
-                    def_agent = self.agents_list[self.data_board[x][y]]
+                self.attack_board[x, y] = 1
+                if self.main_board[x, y] == AGENT and self.data_board[x, y] // 2 != self.data_board[X, Y] // 2:
+                    def_agent = self.agents_list[self.data_board[x, y]]
                     self.hit_agent(agent, def_agent)
-        elif(action == LINEAR_ATTACK_LEFT):
-            (dx, dy) = act_dict[MOVE_LEFT]
-            for i in range(1, self.linear_attack_range+1):
-                x, y = self.coord_transform(X, Y, dx*i, dy*i)
-                if (not self.check_coord_valid(x, y)) or self.main_board[x][y] == WALL:
+        elif action == LINEAR_ATTACK_LEFT:
+            dx, dy = act_dict[MOVE_LEFT]
+            for i in range(1, self.linear_attack_range + 1):
+                x, y = self.coord_transform(X, Y, dx * i, dy * i)
+                if (not self.check_coord_valid(x, y)) or self.main_board[x, y] == WALL:
                     break
                 # update attack list:
-                self.attack_board[x][y] = 1
-                if self.main_board[x][y] == AGENT and self.data_board[x][y]//2 != self.data_board[X][Y]//2:
-                    def_agent = self.agents_list[self.data_board[x][y]]
+                self.attack_board[x, y] = 1
+                if self.main_board[x, y] == AGENT and self.data_board[x, y] // 2 != self.data_board[X, Y] // 2:
+                    def_agent = self.agents_list[self.data_board[x, y]]
                     self.hit_agent(agent, def_agent)
         agent.action = action
-        agent.alpha = agent.alpha+2
+        agent.alpha = agent.alpha + 2
 
     def ranged_attack(self, attacker: agent):
         r = self.ranged_attack_radius
-        R = int(r*2 + 1)
-        attacker_index = self.data_board[attacker.x][attacker.y]
+        R = int(r * 2 + 1)
+        attacker_index = self.data_board[attacker.x, attacker.y]
         attack_range = self.manhattan_sight(attacker.x, attacker.y, R)
         attack_x = attack_range[:, :, 2][np.where(
             attack_range[:, :, 1] != OUT_OF_SIGHT)]
@@ -487,44 +434,45 @@ class AICUP2022ENV(Env):
         for agent in agents_in_range:
             agent_index = agent[1]
             defender = self.agents_list[agent_index]
-            if attacker_index//2 != agent_index//2:
+            if attacker_index // 2 != agent_index // 2:
                 self.hit_agent(attacker, defender)
         attacker.action = RANGED_ATTACK
-        attacker.alpha = attacker.alpha+2
+        attacker.alpha = attacker.alpha + 2
 
     def hit_agent(self, attacker: agent, defender: agent):
-        attck_effc = min(self.cool_down_rate**attacker.alpha, 1)
-        attack_rate = attck_effc*attacker.atk_lvl / \
-            (attacker.atk_lvl+defender.def_lvl)
-        gold_amount = int(defender.wallet*attack_rate)
+        attck_effc = min(self.cool_down_rate ** attacker.alpha, 1)
+        attack_rate = attck_effc * attacker.atk_lvl / \
+            (attacker.atk_lvl + defender.def_lvl)
+        gold_amount = int(defender.wallet * attack_rate)
         defender.wallet -= gold_amount
         attacker.robbed_gold += gold_amount
         gold = self.perimeter_gold_distribution(
             gold_amount, defender.x, defender.y)
         for i in range(3):
             for j in range(3):
-                x, y = self.coord_transform(defender.x, defender.y, i-1, j-1)
+                x, y = self.coord_transform(
+                    defender.x, defender.y, i - 1, j - 1)
                 if not self.check_coord_valid(x, y):
                     continue
-                if gold[i][j] > 0:
+                if gold[i, j] > 0:
                     if self.main_board[x, y] == GOLD or self.main_board[x, y] == EMPTY:
                         self.main_board[x, y] = GOLD
-                        self.data_board[x, y] += gold[i][j]
+                        self.data_board[x, y] += gold[i, j]
                     elif self.main_board[x, y] == AGENT:
                         index = self.data_board[x, y]
-                        self.agents_list[index].wallet += int(gold[i][j])
+                        self.agents_list[index].wallet += gold[i, j]
 
     def perimeter_gold_distribution(self, gold_amount, x, y):
         around_agent = np.zeros((3, 3), dtype=int)
         count = 0
         while count < gold_amount:
             coord = randint(0, 8)
-            dx = coord//3 - 1
+            dx = coord // 3 - 1
             dy = coord % 3 - 1
             temp_x, temp_y = self.coord_transform(x, y, dx, dy)
             if self.check_coord_valid(temp_x, temp_y):
-                if (dx != 0 or dy != 0) and self.main_board[temp_x][temp_y] != WALL and self.main_board[temp_x][temp_y] != TREASURY:
-                    around_agent[dx+1][dy+1] += 1
+                if (dx != 0 or dy != 0) and self.main_board[temp_x, temp_y] != WALL and self.main_board[temp_x, temp_y] != TREASURY:
+                    around_agent[dx+1, dy+1] += 1
                     count += 1
         return around_agent
 
