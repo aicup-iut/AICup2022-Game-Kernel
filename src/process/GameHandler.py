@@ -119,7 +119,7 @@ class GameHandler:
             self.end_engine = True
             self.winner = [1, 'Timeout']
             if(self.end_engine):
-                self.winner[0] = randrange(2)
+                self.winner[0] += randrange(2)
                 self.winner[1] += '/random'
 
     def update_info(self):

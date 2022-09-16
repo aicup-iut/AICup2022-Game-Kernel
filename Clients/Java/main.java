@@ -96,6 +96,7 @@ public class main {
             int x = scanner.nextInt();
             int y = scanner.nextInt();
             location = new Point(x, y); // (row, column)
+            map.grid = new Vector<>();
             for (int i = 0; i < map.sightRange * map.sightRange; i++) {
                 MapTile tile = new MapTile();
                 tile.type = MapType.values()[scanner.nextInt()];
