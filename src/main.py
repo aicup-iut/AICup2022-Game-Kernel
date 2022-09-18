@@ -15,7 +15,7 @@ if __name__ == '__main__':
                         help='First player name')
     parser.add_argument('-n2', default='Team 2', type=str,
                         help='Second player name')
-    parser.add_argument('--setting', default=Path(r'src/settings.json'), type=Path,
+    parser.add_argument('--setting', default=Path(r'src/settings/setting1.json'), type=Path,
                         help='Setting JSON file path')
     parser.add_argument('--log', default=Path(r'logs/{}'.format(int(time() * 1000))), type=Path,
                         help='Path to store logs')
