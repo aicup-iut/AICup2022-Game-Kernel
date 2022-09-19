@@ -116,11 +116,11 @@ class GameHandler:
 
         if not (self.is_alive[2] or self.is_alive[3]):
             print('Agents of player 2 destroyed!')
-            self.end_engine = True
-            self.winner = [1, 'Timeout']
             if(self.end_engine):
-                self.winner[0] += randrange(2)
-                self.winner[1] += '/random'
+                self.winner = [randrange(1, 3), 'Timeout/random']
+            else:
+                self.end_engine = True
+                self.winner = [1, 'Timeout']
 
     def update_info(self):
         self.final_info['steps'].append({'players_data': [], 'map_data': {}})
@@ -174,7 +174,7 @@ class GameHandler:
 
     def log_jsonify(self):
         with open(f'{self.log_path}/game.json', 'w', encoding='utf8') as json_file:
-            dump(self.final_info, json_file, ensure_ascii=False, indent='\t')
+            dump(self.final_info, json_file, ensure_ascii=False)
 
     def visualize(self):
         if not self.visualizer:
