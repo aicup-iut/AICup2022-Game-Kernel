@@ -1,0 +1,15 @@
+{
+    "rounds": 280,
+    "def_upgrade_cost": 3,
+    "atk_upgrade_cost": 2,
+    "cool_down_rate": 0.5,
+    "linear_attack_range": 4,
+    "ranged_attack_radius": 3,
+    "gold_count": 28,
+    "agent_sight_range": 11,
+    "timeout": 2,
+    "running_cpu_limit": 80,
+    "sleeping_cpu_limit": 10,
+    "memory_limit": 512
+  }
+  
